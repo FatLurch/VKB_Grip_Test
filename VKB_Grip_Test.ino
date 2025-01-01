@@ -36,6 +36,9 @@ unsigned long previousMillis = 0;
 const long interval = 100; 
 
 char msg[74];
+char hexOut[2];
+
+uint8_t buffer[100] = {};
 
 uint8_t byteIndex = 0;
 
@@ -56,9 +59,10 @@ void loop() {
 
   if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1)
     //Serial.write(Serial1.read());   // read it and send it out Serial (USB)
-    sprintf(msg,"%02X",Serial1.read());
-    Serial.write(msg);
-    Serial.write(" ");
+    sprintf(msg,"%02X",buffer[byteIndex] = Serial1.read());
+    //Serial.write(msg);
+    //Serial.write(" ");
+    //buffer[byteIndex] = msg;
     byteIndex++;
   }
 
@@ -78,13 +82,22 @@ void loop() {
     Serial1.write(0xA5);
     Serial1.write(0xAB);
     
+
+
+    //Serial.println("");
+
+    for(int i = 0; i < 42; i++)
+    {
+      Serial.print(buffer[i], HEX);
+      Serial.print(" ");
+    }
+
     Serial.print(" -- ");
     Serial.print(byteIndex);
     Serial.print(" bytes");
     byteIndex = 0;
 
     Serial.println("");
-    
   }
 
 }
