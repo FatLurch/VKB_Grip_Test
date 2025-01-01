@@ -141,18 +141,20 @@ void loop() {
       //int test = (map(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111, 80, 830, 0, 1023));  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
       //Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);
 
-      int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
-      int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
-      int test3 = (test + test2)*-0.015625;
+      //int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
+      //int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
+      //int test3 = (test + test2)*-0.015625;
       
-      
+      /*
       Serial.print(test);
       Serial.print(" - ");
       Serial.print(test2);
       Serial.print(" - ");
       Serial.print(test3);
-
+      */
       Serial.println("");
+
+      
 
 
       // Digital outputs
