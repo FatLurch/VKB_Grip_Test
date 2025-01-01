@@ -110,7 +110,7 @@ void loop() {
       Serial.print(" - ");
       //Serial.print(buffer[38], BIN);
 
-      int byteToTest = 30;
+      int byteToTest = 29;
 
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
@@ -122,6 +122,7 @@ void loop() {
       Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
       //Serial.print(bitRead(buffer[byteToTest], 4), BIN);
+      /*
       Serial.print(buffer[byteToTest], DEC);
       Serial.print(" - ");
       Serial.print(flipByte(buffer[byteToTest]), DEC);
@@ -130,9 +131,15 @@ void loop() {
       Serial.print(" - ");
       Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
+      */
+      
       //int test = buffer[byteToTest] & 3;  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
-      int test = buffer[30] & B00000011;  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
+      int test = ((buffer[30] & B00000011) << 8) + (buffer[29] ^ B10011111);  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
+      Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);
+      //int test2 = buffer[29] ^ B10011111 ;
       Serial.print(test);
+      //Serial.print(" - ");
+      //Serial.print(test2);
 
       Serial.println("");
 
