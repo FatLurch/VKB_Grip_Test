@@ -41,6 +41,7 @@ const long interval = 50; //The loop will fire after this many milliseconds
 
 char msg[74];
 char hexOut[10];
+//char binOut[8];
 
 uint8_t buffer[100] = {};
 
@@ -57,18 +58,15 @@ void setup() {
 void loop() {
 
   unsigned long currentMillis = millis();
-
+  /*
   if (Serial.available()) {      // If anything comes in Serial (USB),
     Serial1.write(Serial.read());   // read it and send it out Serial1 (pins 0 & 1)
   }
+  */
 
   if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1)
     //Serial.write(Serial1.read());   // read it and send it out Serial (USB)
-    //sprintf(msg,"%02X",buffer[byteIndex] = Serial1.read());
     buffer[byteIndex] = Serial1.read();
-    //Serial.write(msg);
-    //Serial.write(" ");
-    //buffer[byteIndex] = msg;
     byteIndex++;
   }
 
@@ -88,14 +86,6 @@ void loop() {
     Serial1.write(0x00);
     Serial1.write(0xA5);
     Serial1.write(0xAB);
-    
-
-
-    //Serial.println("");
-
-
-
-    
 
     if(byteIndex == 43) //i.e. if it's a good packet
     {
@@ -108,23 +98,29 @@ void loop() {
         
       }
       Serial.print(" - ");
-      Serial.print(buffer[40], BIN);
+      //Serial.print(buffer[38], BIN);
+
+      int byteToTest = 38;
+
+      Serial.print(bitRead(buffer[byteToTest], 7), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 6), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 5), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 4), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 3), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 2), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 1), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
-      Serial.print(bitRead(buffer[40], 7), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 6), BIN);
       Serial.println("");
-      Joystick.setButton(0, bitRead(buffer[40], 7));
-      /*
-      Serial.print(" -- ");
-      Serial.print(byteIndex);
-      Serial.print(" bytes");
-      Serial.print(" -- ");
-      Serial.print("Good packet");
-      */
+
+      Joystick.setButton(0, bitRead(buffer[40], 7));  //Forward Trigger
+      Joystick.setButton(1, bitRead(buffer[38], 5));  //1st stage of two stage trigger
+      Joystick.setButton(2, !bitRead(buffer[38], 6));  //2nd stage of two stage trigger
+
     }
 
     byteIndex = 0;
-
-    
 
   }
 
