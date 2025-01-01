@@ -100,7 +100,7 @@ void loop() {
       Serial.print(" - ");
       //Serial.print(buffer[38], BIN);
 
-      int byteToTest = 38;
+      int byteToTest = 39;
 
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
@@ -111,12 +111,42 @@ void loop() {
       Serial.print(bitRead(buffer[byteToTest], 1), BIN);
       Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
-      Serial.print(bitRead(buffer[byteToTest], 6), BIN);
+      Serial.print(bitRead(buffer[byteToTest], 4), BIN);
       Serial.println("");
 
-      Joystick.setButton(0, bitRead(buffer[40], 7));  //Forward Trigger
-      Joystick.setButton(1, bitRead(buffer[38], 5));  //1st stage of two stage trigger
-      Joystick.setButton(2, !bitRead(buffer[38], 6));  //2nd stage of two stage trigger
+      Joystick.setButton(0, bitRead(buffer[40], 7));    //Forward Trigger
+      Joystick.setButton(1, bitRead(buffer[38], 5));    //1st stage of two stage trigger
+      Joystick.setButton(2, !bitRead(buffer[38], 6));   //2nd stage of two stage trigger
+      Joystick.setButton(3, bitRead(buffer[39], 7));    //Grey round button to the right of PC hat
+      Joystick.setButton(4, !bitRead(buffer[39], 5));   //Grey round button to the right of MANVR hat
+      Joystick.setButton(5, bitRead(buffer[39], 6));    //Red round button to the left of MANVR hat
+      Joystick.setButton(6, bitRead(buffer[38], 7));    //Black ring finger button below reset hat
+      Joystick.setButton(7, bitRead(buffer[40], 4));    //Reset hat center click
+      Joystick.setButton(8, !bitRead(buffer[40], 2));   //Reset hat left click
+      Joystick.setButton(9, !bitRead(buffer[40], 0));   //Reset hat back click
+      Joystick.setButton(10, bitRead(buffer[40], 3));   //Reset hat right click
+      Joystick.setButton(11, !bitRead(buffer[40], 1));  //Reset hat forward click
+      Joystick.setButton(12, bitRead(buffer[38], 4));   //PC hat center click
+      Joystick.setButton(13, bitRead(buffer[38], 3));   //PC hat left click
+      Joystick.setButton(14, !bitRead(buffer[38], 1));  //PC hat down click
+      Joystick.setButton(15, bitRead(buffer[38], 2));   //PC hat right click
+      Joystick.setButton(16, bitRead(buffer[38], 0));   //PC hat up click
+      Joystick.setButton(17, bitRead(buffer[40], 5));   //Gate Cont hat click
+      Joystick.setButton(18, bitRead(buffer[41], 7));   //Gate Cont hat left
+      Joystick.setButton(19, bitRead(buffer[41], 4));   //Gate Cont hat down
+      Joystick.setButton(20, !bitRead(buffer[41], 5));  //Gate Cont hat right
+      Joystick.setButton(21, !bitRead(buffer[41], 6));  //Gate Cont hat right
+      Joystick.setButton(22, !bitRead(buffer[40], 6));  //Master mode hat click
+      Joystick.setButton(23, bitRead(buffer[41], 3));   //Master mode hat left
+      Joystick.setButton(24, bitRead(buffer[41], 0));   //Master mode hat down
+      Joystick.setButton(25, !bitRead(buffer[41], 1));  //Master mode hat right
+      Joystick.setButton(26, bitRead(buffer[41], 2));   //Master mode hat right
+      Joystick.setButton(27, !bitRead(buffer[39], 4));  //DC hat click
+      Joystick.setButton(28, !bitRead(buffer[39], 0));  //DC hat back
+      Joystick.setButton(29, !bitRead(buffer[39], 3));  //DC hat down
+      Joystick.setButton(30, bitRead(buffer[39], 1));   //DC hat down
+      Joystick.setButton(31, !bitRead(buffer[39], 2));  //DC hat up
+
 
     }
 
