@@ -31,6 +31,10 @@
  * 
  */
 
+#include "Joystick.h"
+
+Joystick_ Joystick;
+
 unsigned long previousMillis = 0;
 
 const long interval = 50; //The loop will fire after this many milliseconds
@@ -47,6 +51,7 @@ uint8_t byteIndex = 0;
 void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
+  Joystick.begin();
 }
 
 void loop() {
@@ -107,6 +112,7 @@ void loop() {
       Serial.print(" - ");
       Serial.print(bitRead(buffer[40], 7), BIN);
       Serial.println("");
+      Joystick.setButton(0, bitRead(buffer[40], 7));
       /*
       Serial.print(" -- ");
       Serial.print(byteIndex);
