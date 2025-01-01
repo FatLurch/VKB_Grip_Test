@@ -63,7 +63,7 @@ void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
   Joystick.begin();
-  Joystick.setXAxisRange(-128, 128);
+  Joystick.setXAxisRange(-329, 280);
   Joystick.setYAxisRange(-130, 145);
   Joystick.setRxAxisRange(90, 830);
   Joystick.setRyAxisRange(350, 1800);
@@ -89,7 +89,7 @@ void loop() {
     previousMillis = currentMillis;
     //Serial1.write("Test");
 
-    //This is the "interrogation packed" for the VKB Gunfighter - 0xA5 0x09 0x11 0x98 0x00 0x00 0x00 0xA5 0xAB
+    //This is the "interrogation packed" for the VKB MCG Pro - 0xA5 0x09 0x11 0x98 0x00 0x00 0x00 0xA5 0xAB
     
     Serial1.write(0xA5);
     Serial1.write(0x09);
@@ -114,7 +114,7 @@ void loop() {
       Serial.print(" - ");
       //Serial.print(buffer[38], BIN);
 
-      int byteToTest = 25;
+      int byteToTest = 28;
 
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
@@ -141,9 +141,9 @@ void loop() {
       //int test = (map(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111, 80, 830, 0, 1023));  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
       //Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);
 
-      int test = (buffer[26] & B00111111 ^ B00110001) << 10;
-      int test2 = (buffer[25] & B11100000 ^ B11100000) << 2;
-      int test3 = (test + test2) * -0.0078125;
+      int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
+      int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
+      int test3 = (test + test2)*-0.015625;
       
       
       Serial.print(test);
@@ -192,7 +192,14 @@ void loop() {
       // Analog outputs
       Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111); 
       Joystick.setRyAxis(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3)); 
-      Joystick.setYAxis(test3);
+      Joystick.setXAxis((((buffer[28] & B00111111 ^ B00000111) << 10) + ((buffer[27] & B11110000 ^ B01100000) << 2)) * -0.015625);
+      Joystick.setYAxis((((buffer[26] & B00111111 ^ B00110001) << 10) + ((buffer[25] & B11100000 ^ B11100000) << 2)) * -0.0078125);
+
+      /*
+      int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
+      int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
+      int test3 = (test + test2)*-0.015625;
+      */
 
     }
 
