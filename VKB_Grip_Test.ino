@@ -37,6 +37,10 @@ const long interval = 100;
 
 char msg[74];
 
+uint8_t byteIndex = 0;
+
+//static uint8_t interrogation[] = {0xA5, 0x09, 0x11, 0x98, 0x00, 0x00, 0x00, 0xA5, 0xAB};
+
 void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
@@ -45,7 +49,7 @@ void setup() {
 void loop() {
 
   unsigned long currentMillis = millis();
-  
+
   if (Serial.available()) {      // If anything comes in Serial (USB),
     Serial1.write(Serial.read());   // read it and send it out Serial1 (pins 0 & 1)
   }
@@ -55,6 +59,7 @@ void loop() {
     sprintf(msg,"%02X",Serial1.read());
     Serial.write(msg);
     Serial.write(" ");
+    byteIndex++;
   }
 
   if (currentMillis - previousMillis >= interval) {
@@ -62,6 +67,7 @@ void loop() {
     //Serial1.write("Test");
 
     //This is the "interrogation packed" for the VKB Gunfighter - 0xA5 0x09 0x11 0x98 0x00 0x00 0x00 0xA5 0xAB
+    
     Serial1.write(0xA5);
     Serial1.write(0x09);
     Serial1.write(0x11);
@@ -71,6 +77,11 @@ void loop() {
     Serial1.write(0x00);
     Serial1.write(0xA5);
     Serial1.write(0xAB);
+    
+    Serial.print(" -- ");
+    Serial.print(byteIndex);
+    Serial.print(" bytes");
+    byteIndex = 0;
 
     Serial.println("");
     
