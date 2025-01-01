@@ -4,7 +4,8 @@ Basic Arduino Joystick interface to VKB MCG Pro grip
 
 ## Disclaimer
 
-This information is provided without warranty. Also, if you're looking for elegant design or code, you are in the wrong place.
+This information is provided without warranty - USE AT YOUR OWN RISK. 
+Also, if you're looking for elegant design or code, you are in the wrong place.
 
 ## Overview
 
