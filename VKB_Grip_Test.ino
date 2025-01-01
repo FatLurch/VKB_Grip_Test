@@ -36,7 +36,7 @@ unsigned long previousMillis = 0;
 const long interval = 100; 
 
 char msg[74];
-char hexOut[2];
+char hexOut[10];
 
 uint8_t buffer[100] = {};
 
@@ -86,9 +86,11 @@ void loop() {
 
     //Serial.println("");
 
-    for(int i = 0; i < 42; i++)
+    for(int i = 0; i < byteIndex; i++)
     {
-      Serial.print(buffer[i], HEX);
+      //Serial.print(buffer[i], HEX);
+      sprintf(hexOut, "%02X", buffer[i]);
+      Serial.print(hexOut);
       Serial.print(" ");
     }
 
