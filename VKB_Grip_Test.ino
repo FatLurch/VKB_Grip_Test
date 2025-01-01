@@ -100,18 +100,25 @@ void loop() {
         sprintf(hexOut, "%02X", buffer[i]);
         Serial.print(hexOut);
         Serial.print(" ");
+        
       }
-
+      Serial.print(" - ");
+      Serial.print(buffer[40], BIN);
+      Serial.print(" - ");
+      Serial.print(bitRead(buffer[40], 7), BIN);
+      Serial.println("");
+      /*
       Serial.print(" -- ");
       Serial.print(byteIndex);
       Serial.print(" bytes");
       Serial.print(" -- ");
       Serial.print("Good packet");
+      */
     }
 
     byteIndex = 0;
 
-    Serial.println("");
+    
 
   }
 
