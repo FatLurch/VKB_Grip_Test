@@ -37,7 +37,7 @@ To wire to the grip itself, I used a 3 pin JST Molex PicoBlade 1.25mm style conn
 
 ** WHEN COMPILING THIS CODE ON ARDUINO MICRO CLONES BOARDS, YOU'LL LIKELY NEED TO SET THE BOARD TYPE TO ARDUINO LEONARDO **
 
-The two analog hats are mapped both as analog outputs, and as digital "buttons" for up, down, left and right. The flip up analog trigger is mapped as an analog button when fully clicked, and as an analog axis.
+The two analog hats are mapped both as analog outputs, and as digital "buttons" for up, down, left and right. The flip up analog trigger is mapped as a button when fully clicked and as an analog axis.
 
 The math for calculating the analog positions is pretty rough and could use some work.
 
