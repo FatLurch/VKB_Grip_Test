@@ -9,7 +9,7 @@ Also, if you're looking for elegant design or code, you are in the wrong place.
 
 ## Overview
 
-This project is intended to wire an Arduino Micro directly to a VKB MCG Pro grip so that the Arduino can output the status of the grip as a Joystick using standard Windows joystick drivers.
+This project is intended to wire an Arduino Pro Micro directly to a VKB MCG Pro grip so that the Arduino can output the status of the grip as a Joystick using standard Windows joystick drivers.
 
 ## Circuit
 
@@ -37,9 +37,9 @@ To wire to the grip itself, I used a 3 pin JST Molex PicoBlade 1.25mm style conn
 
 ** WHEN COMPILING THIS CODE ON ARDUINO MICRO CLONES BOARDS, YOU'LL LIKELY NEED TO SET THE BOARD TYPE TO ARDUINO LEONARDO **
 
-The two analog hats are mapped both as analog outputs, and as digital "buttons" for up, down, left and right.
+The two analog hats are mapped both as analog outputs, and as digital "buttons" for up, down, left and right. The flip up analog trigger is mapped as an analog button when fully clicked, and as an analog axis.
 
-The math for calculating the analog positions is a bit sketchy and cxould use some work.
+The math for calculating the analog positions is pretty rough and could use some work.
 
 Currently, grip Z twist isn't incorperated because I'm not using it in my application and I don't want to build a custom PCB and mount to interface to the pogo pins in the twist adapter.
 
