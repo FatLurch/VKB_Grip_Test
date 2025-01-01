@@ -10,7 +10,7 @@ This project is intended to wire an Arduino Micro directly to a VKB MCG Pro grip
 ## Circuit
 The VKB grip uses a weird half-duplex UART line to transmit and recieve. In layman's terms, The TX and RX are tied together.
 
-For my specific build I had a few Arduino Pro Micros laying around. This complicated things a bit since it uses 5V UART (The VKB grip is using 3.3V. There's a chance the UART pin on the STM32 microcontroller in the grip is 5V tolerant, but I wasn't feeling gutsy enough to try it, even if I were to dig in and verify the pin per the spec sheet. Ref: [https://community.st.com/t5/stm32-mcus-products/stm-uart-communication-voltage/td-p/288531](https://community.st.com/t5/stm32-mcus-products/stm-uart-communication-voltage/td-p/288531) 
+For my specific build I had a few Arduino Pro Micros laying around. This complicated things a bit since it uses 5V UART (The VKB grip is using 3.3V). There's a chance the UART pin on the STM32 microcontroller in the grip is 5V tolerant, but I wasn't feeling gutsy enough to try it, even if I were to dig in and verify the pin per the spec sheet. Ref: [https://community.st.com/t5/stm32-mcus-products/stm-uart-communication-voltage/td-p/288531](https://community.st.com/t5/stm32-mcus-products/stm-uart-communication-voltage/td-p/288531) 
 
 My specific Arduino appeared to be outputting closer to 4V than 5V on the TX pin when measured with an oscillioscope. The two resistors act as a voltage divider to bring the TX voltage from the Arduino down to about 3.2V. The RX pin on my Arduino accepted the 3.3V signal from the VKB grip directly. 
 
