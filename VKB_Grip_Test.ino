@@ -49,6 +49,16 @@ uint8_t byteIndex = 0;
 
 //static uint8_t interrogation[] = {0xA5, 0x09, 0x11, 0x98, 0x00, 0x00, 0x00, 0xA5, 0xAB};
 
+byte flipByte(byte c){
+  char r=0;
+  for(byte i = 0; i < 8; i++){
+    r <<= 1;
+    r |= c & 1;
+    c >>= 1;
+  }
+  return r;
+}
+
 void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
@@ -100,7 +110,7 @@ void loop() {
       Serial.print(" - ");
       //Serial.print(buffer[38], BIN);
 
-      int byteToTest = 39;
+      int byteToTest = 30;
 
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
@@ -111,7 +121,19 @@ void loop() {
       Serial.print(bitRead(buffer[byteToTest], 1), BIN);
       Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
-      Serial.print(bitRead(buffer[byteToTest], 4), BIN);
+      //Serial.print(bitRead(buffer[byteToTest], 4), BIN);
+      Serial.print(buffer[byteToTest], DEC);
+      Serial.print(" - ");
+      Serial.print(flipByte(buffer[byteToTest]), DEC);
+      Serial.print(" - ");
+      Serial.print(bitRead(buffer[byteToTest], 1), BIN);
+      Serial.print(" - ");
+      Serial.print(bitRead(buffer[byteToTest], 0), BIN);
+      Serial.print(" - ");
+      //int test = buffer[byteToTest] & 3;  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
+      int test = buffer[30] & B00000011;  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
+      Serial.print(test);
+
       Serial.println("");
 
       Joystick.setButton(0, bitRead(buffer[40], 7));    //Forward Trigger
