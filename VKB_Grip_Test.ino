@@ -1,34 +1,11 @@
 /*
-  SerialPassthrough sketch
-
-  Some boards, like the Arduino 101, the MKR1000, Zero, or the Micro, have one
-  hardware serial port attached to Digital pins 0-1, and a separate USB serial
-  port attached to the IDE Serial Monitor. This means that the "serial
-  passthrough" which is possible with the Arduino UNO (commonly used to interact
-  with devices/shields that require configuration via serial AT commands) will
-  not work by default.
-
-  This sketch allows you to emulate the serial passthrough behaviour. Any text
-  you type in the IDE Serial monitor will be written out to the serial port on
-  Digital pins 0 and 1, and vice-versa.
-
-  On the 101, MKR1000, Zero, and Micro, "Serial" refers to the USB Serial port
-  attached to the Serial Monitor, and "Serial1" refers to the hardware serial
-  port attached to pins 0 and 1. This sketch will emulate Serial passthrough
-  using those two Serial ports on the boards mentioned above, but you can change
-  these names to connect any two serial ports on a board that has multiple ports.
-
-  created 23 May 2016
-  by Erik Nyquist
-*/
-
-/*
- * Created 12/31/2024 by Erik Kofahl, built upon the SerialPassthrough sketch by Erik Nyquist
+ * Created 12/31/2024 by Fat_Lurch, built upon the SerialPassthrough sketch by Erik Nyquist
  * 
- * This is a basic test to try to interrogate a VKB grip using a 1-wire Serial interface
+ * This sketch sets up the Arduino to communicate with a VKB MCG Pro grip and act as a Joystick in Windows
  * 
  * A 3k and a 10k resistor are used in a voltage divider to lower the output voltage of the TX pin (measured as ~4V before voltage divider)
  * 
+ * ### WHEN COMPILING THIS CODE ON ARDUINO MICRO CLONES BOARDS, YOU'LL LIKELY NEED TO SET THE BOARD TYPE TO ARDUINO LEONARDO ###
  */
 
 #include "Joystick.h"
@@ -38,10 +15,8 @@ Joystick_ Joystick;
 unsigned long previousMillis = 0;
 
 const long interval = 10; //The loop will fire after this many milliseconds
-
-char msg[74];
-char hexOut[10];
-//char binOut[8];
+   
+char hexOut[8]; 
 
 uint8_t buffer[100] = {};
 
@@ -49,37 +24,24 @@ uint8_t byteIndex = 0;
 
 //static uint8_t interrogation[] = {0xA5, 0x09, 0x11, 0x98, 0x00, 0x00, 0x00, 0xA5, 0xAB};
 
-byte flipByte(byte c){
-  char r=0;
-  for(byte i = 0; i < 8; i++){
-    r <<= 1;
-    r |= c & 1;
-    c >>= 1;
-  }
-  return r;
-}
-
 void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
   Joystick.begin();
+  Joystick.setThrottleRange(105, 830);
   Joystick.setXAxisRange(-329, 280);
   Joystick.setYAxisRange(-130, 145);
-  Joystick.setRxAxisRange(90, 830);
-  Joystick.setRyAxisRange(350, 1800);
+  Joystick.setRzAxisRange(350, 1800);
+  Joystick.setRyAxisRange(-2900, 2900);   //Master Mode hat y-axis
+  Joystick.setRxAxisRange(-2800, 2800);   //Master Mode hat x-axis
 }
 
 void loop() {
 
   unsigned long currentMillis = millis();
-  /*
-  if (Serial.available()) {      // If anything comes in Serial (USB),
-    Serial1.write(Serial.read());   // read it and send it out Serial1 (pins 0 & 1)
-  }
-  */
 
-  if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1)
-    //Serial.write(Serial1.read());   // read it and send it out Serial (USB)
+  //This is necessary because of the way the Micro handles serial. Reference the SerialPassthrough sketch in examples > communication
+  if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1) (Vs Serial which is the USB interface)
     buffer[byteIndex] = Serial1.read();
     byteIndex++;
   }
@@ -87,10 +49,8 @@ void loop() {
   if (currentMillis - previousMillis >= interval) {
     
     previousMillis = currentMillis;
-    //Serial1.write("Test");
 
-    //This is the "interrogation packed" for the VKB MCG Pro - 0xA5 0x09 0x11 0x98 0x00 0x00 0x00 0xA5 0xAB
-    
+    //This is the "interrogation packet" for the VKB MCG Pro - 0xA5 0x09 0x11 0x98 0x00 0x00 0x00 0xA5 0xAB
     Serial1.write(0xA5);
     Serial1.write(0x09);
     Serial1.write(0x11);
@@ -103,19 +63,21 @@ void loop() {
 
     if(byteIndex == 43) //i.e. if it's a good packet
     {
-      for(int i = 0; i < byteIndex; i++)
+      for(uint8_t i = 0; i < byteIndex; i++)
       {
-        //Serial.print(buffer[i], HEX);
-        sprintf(hexOut, "%02X", buffer[i]);
-        Serial.print(hexOut);
-        Serial.print(" ");
+        //Display of the raw hex coming from the grip. I'd manipulate one control at a time to see which bytes were reacting, then I'd focus on those bytes and try to decode them
+
+        //sprintf(hexOut, "%02X", buffer[i]);
+        //Serial.print(hexOut);
+        //Serial.print(" ");
         
       }
-      Serial.print(" - ");
-      //Serial.print(buffer[38], BIN);
+      //Serial.print(" - ");
 
-      int byteToTest = 28;
+      int byteToTest = 22;
 
+      /*
+      //Display the individual bits in the byte of interest to see which bit starts reacting first
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
       Serial.print(bitRead(buffer[byteToTest], 5), BIN);
@@ -125,37 +87,27 @@ void loop() {
       Serial.print(bitRead(buffer[byteToTest], 1), BIN);
       Serial.print(bitRead(buffer[byteToTest], 0), BIN);
       Serial.print(" - ");
-      //Serial.print(bitRead(buffer[byteToTest], 4), BIN);
-      /*
-      Serial.print(buffer[byteToTest], DEC);
-      Serial.print(" - ");
-      Serial.print(flipByte(buffer[byteToTest]), DEC);
-      Serial.print(" - ");
-      Serial.print(bitRead(buffer[byteToTest], 1), BIN);
-      Serial.print(" - ");
-      Serial.print(bitRead(buffer[byteToTest], 0), BIN);
-      Serial.print(" - ");
       */
-      
-      //int test = buffer[byteToTest] & 3;  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
-      //int test = (map(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111, 80, 830, 0, 1023));  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
-      //Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);
 
-      //int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
-      //int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
-      //int test3 = (test + test2)*-0.015625;
+      //Tests for each byte. 
+      //I was starting with a bitmask of B00000000 and then "turning on" the most significant bit. I'd then sweep the range to see if the result was incrementing/decrementing correctly and smoothly
+      //If turning on a bit caused non-linear behavior, I'd set an inversion mask bit to correct
+      //At the end I'd try using an offset bit mask to get the swept range (e.g. from x to - x)
+      //The bitshifts (<< and >>) were to rearrange bits to the correct spot. e.g. the first bit on a signed value needs to be the left most bit, even though that makes for a silly large number
+
+      //                          Bit Mask    Inv Mask     offset Mask
+      //int test = ((buffer[24] & B00011111 ^ B00001001) + B00000001 << 11);
+      //int test2 = ((buffer[23] & B11111111 ^ B11011000) + B01100000 << 3);  //
+      //int test3 = (test + test2) >> 3;// 
       
-      /*
-      Serial.print(test);
-      Serial.print(" - ");
-      Serial.print(test2);
-      Serial.print(" - ");
+      
+      //Serial.print(test);
+      //Serial.print(" - ");
+      //Serial.print(test2);
+      //Serial.print(" - ");
       Serial.print(test3);
-      */
-      Serial.println("");
-
       
-
+      Serial.println("");
 
       // Digital outputs
       Joystick.setButton(0, bitRead(buffer[40], 7));    //Forward Trigger
@@ -192,16 +144,12 @@ void loop() {
       Joystick.setButton(31, !bitRead(buffer[39], 2));  //DC hat up
 
       // Analog outputs
-      Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111); 
-      Joystick.setRyAxis(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3)); 
-      Joystick.setXAxis((((buffer[28] & B00111111 ^ B00000111) << 10) + ((buffer[27] & B11110000 ^ B01100000) << 2)) * -0.015625);
-      Joystick.setYAxis((((buffer[26] & B00111111 ^ B00110001) << 10) + ((buffer[25] & B11100000 ^ B11100000) << 2)) * -0.0078125);
-
-      /*
-      int test = ((buffer[28] & B00111111 ^ B00000111) << 10);  //Working baseline
-      int test2 = ((buffer[27] & B11110000 ^ B01100000) << 2);
-      int test3 = (test + test2)*-0.015625;
-      */
+      Joystick.setThrottle(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);       //Brake Lever
+      Joystick.setRzAxis(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3));    //Analog trigger
+      Joystick.setXAxis((((buffer[28] & B00111111 ^ B00000111) << 10) + ((buffer[27] & B11110000 ^ B01100000) << 2)) * -0.015625);    //Gate Cont Hat X axis
+      Joystick.setYAxis((((buffer[26] & B00111111 ^ B00110001) << 10) + ((buffer[25] & B11100000 ^ B11100000) << 2)) * -0.0078125);   //Gate Cont Hat Y Axis
+      Joystick.setRyAxis((((buffer[22] & B00011111 ^ B00001110) + B00000010 << 11) + ((buffer[21] & B11111111 ^ B11001000) + B00001000 << 3)) >> 3);  //Master Mode Hat Y Axis
+      Joystick.setRxAxis((((buffer[24] & B00011111 ^ B00001001) + B00000001 << 11) + ((buffer[23] & B11111111 ^ B11011000) + B01100000 << 3)) >> 3);  //Master Mode Hat X Axis
 
     }
 
