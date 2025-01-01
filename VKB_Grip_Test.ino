@@ -33,7 +33,7 @@
 
 unsigned long previousMillis = 0;
 
-const long interval = 100; 
+const long interval = 50; //The loop will fire after this many milliseconds
 
 char msg[74];
 char hexOut[10];
@@ -59,7 +59,8 @@ void loop() {
 
   if (Serial1.available()) {     // If anything comes in Serial1 (pins 0 & 1)
     //Serial.write(Serial1.read());   // read it and send it out Serial (USB)
-    sprintf(msg,"%02X",buffer[byteIndex] = Serial1.read());
+    //sprintf(msg,"%02X",buffer[byteIndex] = Serial1.read());
+    buffer[byteIndex] = Serial1.read();
     //Serial.write(msg);
     //Serial.write(" ");
     //buffer[byteIndex] = msg;
@@ -67,6 +68,7 @@ void loop() {
   }
 
   if (currentMillis - previousMillis >= interval) {
+    
     previousMillis = currentMillis;
     //Serial1.write("Test");
 
@@ -86,20 +88,31 @@ void loop() {
 
     //Serial.println("");
 
-    for(int i = 0; i < byteIndex; i++)
+
+
+    
+
+    if(byteIndex == 43) //i.e. if it's a good packet
     {
-      //Serial.print(buffer[i], HEX);
-      sprintf(hexOut, "%02X", buffer[i]);
-      Serial.print(hexOut);
-      Serial.print(" ");
+      for(int i = 0; i < byteIndex; i++)
+      {
+        //Serial.print(buffer[i], HEX);
+        sprintf(hexOut, "%02X", buffer[i]);
+        Serial.print(hexOut);
+        Serial.print(" ");
+      }
+
+      Serial.print(" -- ");
+      Serial.print(byteIndex);
+      Serial.print(" bytes");
+      Serial.print(" -- ");
+      Serial.print("Good packet");
     }
 
-    Serial.print(" -- ");
-    Serial.print(byteIndex);
-    Serial.print(" bytes");
     byteIndex = 0;
 
     Serial.println("");
+
   }
 
 }
