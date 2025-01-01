@@ -37,7 +37,7 @@ Joystick_ Joystick;
 
 unsigned long previousMillis = 0;
 
-const long interval = 50; //The loop will fire after this many milliseconds
+const long interval = 10; //The loop will fire after this many milliseconds
 
 char msg[74];
 char hexOut[10];
@@ -63,6 +63,10 @@ void setup() {
   Serial.begin(500000);
   Serial1.begin(500000);
   Joystick.begin();
+  Joystick.setXAxisRange(-128, 128);
+  Joystick.setYAxisRange(-130, 145);
+  Joystick.setRxAxisRange(90, 830);
+  Joystick.setRyAxisRange(350, 1800);
 }
 
 void loop() {
@@ -110,7 +114,7 @@ void loop() {
       Serial.print(" - ");
       //Serial.print(buffer[38], BIN);
 
-      int byteToTest = 32;
+      int byteToTest = 25;
 
       Serial.print(bitRead(buffer[byteToTest], 7), BIN);
       Serial.print(bitRead(buffer[byteToTest], 6), BIN);
@@ -137,9 +141,9 @@ void loop() {
       //int test = (map(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111, 80, 830, 0, 1023));  //Bitmask, these right-most bits are the most significant bits for the brake analog in byte 30
       //Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111);
 
-      int test = (buffer[32] & B00111111 ^ B00101011) << 5;
-      int test2 = (buffer[31] & B11111000 ^ B01011000) >> 3;
-      int test3 = map(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3), 350, 1800, 0, 1023);
+      int test = (buffer[26] & B00111111 ^ B00110001) << 10;
+      int test2 = (buffer[25] & B11100000 ^ B11100000) << 2;
+      int test3 = (test + test2) * -0.0078125;
       
       
       Serial.print(test);
@@ -186,8 +190,9 @@ void loop() {
       Joystick.setButton(31, !bitRead(buffer[39], 2));  //DC hat up
 
       // Analog outputs
-      Joystick.setRxAxis(map(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111, 80, 830, 0, 1023));
-      Joystick.setRyAxis(map(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3), 350, 1800, 0, 1023));
+      Joystick.setRxAxis(((buffer[30] & B00000011) << 8) + buffer[29] ^ B10011111); 
+      Joystick.setRyAxis(((buffer[32] & B00111111 ^ B00101011) << 5) + ((buffer[31] & B11111000 ^ B01011000) >> 3)); 
+      Joystick.setYAxis(test3);
 
     }
 
